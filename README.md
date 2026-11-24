@@ -44,18 +44,17 @@ tr -d '\n' < .local/password | pbcopy
 
 ## 在另一台 Mac 上配置
 
-**1. 准备电脑和网络。** 让新 Mac 和打印机在局域网内互通，记下两台设备各自的局域网 IPv4 地址。安装 `uv` 和 `tmux`（已安装 Homebrew 的 Mac 可运行 `brew install uv tmux`）。在想要存放项目的位置打开终端，克隆仓库并进入项目目录：
+**1. 准备电脑和网络。** 让新 Mac 和打印机在局域网内互通，记下两台设备各自的局域网 IPv4 地址。以下步骤假设已安装 `uv`。后台运行还需要 `tmux`，缺少时可用 Homebrew 安装（`brew install tmux`）。在想要存放项目的位置打开终端，克隆仓库并进入项目目录：
 
 ```bash
 git clone https://github.com/YushunXiang/sharp-scan-ftp.git
 cd sharp-scan-ftp
 ```
 
-**2. 初始化项目。** 在新 Mac 的项目根目录执行以下命令，由 uv 安装 Python 3.12 和项目依赖，并生成这台 Mac 专用的配置和 FTP 密码。
+**2. 初始化项目。** 在项目根目录执行以下命令。`uv sync --locked` 会按项目要求选用 Python 3.12（默认在缺少时自动下载），创建 `.venv` 并按锁文件安装依赖。其余命令生成这台 Mac 的配置和 FTP 密码。
 
 ```bash
-UV_PYTHON_INSTALL_DIR="$PWD/.python" uv python install 3.12 --no-bin
-UV_PYTHON_INSTALL_DIR="$PWD/.python" uv sync --locked --managed-python --python 3.12
+uv sync --locked
 mkdir -p -m 700 .local
 cp -n config.example.toml .local/config.toml
 (umask 077; set -C; openssl rand -hex 14 > .local/password)
@@ -76,6 +75,6 @@ cp -n config.example.toml .local/config.toml
 
 - [src/ftp-cli](src/ftp-cli) 提供日常管理命令，[sharp_scan_ftp](src/sharp_scan_ftp/) 包含接收服务、命令行入口和上传自测。
 - [config.example.toml](config.example.toml) 提供配置模板。[pyproject.toml](pyproject.toml) 和 [uv.lock](uv.lock) 记录项目依赖。
-- `.local/` 保存实际配置、密码、日志和运行时套接字。`.python/` 和 `.venv/` 保存解释器和依赖。
+- `.local/` 保存实际配置、密码、日志和运行时套接字。`.venv/` 是项目虚拟环境，包含项目命令和依赖。
 - FTP 账号仅能访问 `scans/` 顶层的扫描文件类型，包括 PDF、常用图像格式和扫描仪支持的文档格式。项目代码和本机配置不在 FTP 可见范围内。
 - [.gitignore](.gitignore) 排除 `scans/`、本机配置、解释器及构建产物。源码、文档、配置模板和依赖清单可以直接纳入版本控制。
