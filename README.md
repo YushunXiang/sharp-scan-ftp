@@ -6,10 +6,10 @@
 
 ## 日常操作
 
-在当前终端激活工作区环境一次，随后可从任意目录运行 `ftp-cli`：
+完成首次配置后，在项目根目录激活虚拟环境，随后可在当前终端的任意目录运行 `ftp-cli`：
 
 ```bash
-source ~/Documents/ftp/.venv/bin/activate
+source .venv/bin/activate
 ftp-cli status
 ```
 
@@ -44,7 +44,12 @@ tr -d '\n' < .local/password | pbcopy
 
 ## 在另一台 Mac 上配置
 
-**1. 准备电脑和网络。** 将项目源码克隆或复制到新 Mac，让新 Mac 和打印机在局域网内互通。记下两台设备各自的局域网 IPv4 地址。安装 `uv` 和 `tmux`（已安装 Homebrew 的 Mac 可运行 `brew install uv tmux`）。
+**1. 准备电脑和网络。** 让新 Mac 和打印机在局域网内互通，记下两台设备各自的局域网 IPv4 地址。安装 `uv` 和 `tmux`（已安装 Homebrew 的 Mac 可运行 `brew install uv tmux`）。在想要存放项目的位置打开终端，克隆仓库并进入项目目录：
+
+```bash
+git clone https://github.com/YushunXiang/sharp-scan-ftp.git
+cd sharp-scan-ftp
+```
 
 **2. 初始化项目。** 在新 Mac 的项目根目录执行以下命令，由 uv 安装 Python 3.12 和项目依赖，并生成这台 Mac 专用的配置和 FTP 密码。
 
