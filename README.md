@@ -1,5 +1,7 @@
 # 夏普扫描到 Mac
 
+首次使用新 Mac 时，请先完成[在另一台 Mac 上配置](#在另一台-mac-上配置)。这台夏普使用 FTP 将扫描件发送到 Mac，无需安装夏普扫描驱动。
+
 在本工作区打开终端，运行 `./src/ftp-cli start`。保持 Mac 唤醒并连接局域网，在夏普 MX-C4082R 上选择「图像发送」→「地址簿」→「Yushun's Mac」，选择 PDF 并按「开始」。扫描件保存在工作区的 `scans/` 子目录，可用 `open scans` 在访达中查看。
 
 ## 日常操作
@@ -32,7 +34,7 @@ ftp-cli status
 cat .local/config.toml
 ```
 
-地址簿中的服务器填 `mac_ip`，端口填 `port`（本机为 21），用户名填 `username`。选择 FTP、PASV 模式和 PDF，目录填 `/`，它对应 Mac 上的 `~/Documents/ftp/scans/`。密码可用下面的命令复制到剪贴板：
+地址簿中的服务器填 `mac_ip`，端口填 `port`（默认 21），用户名填 `username`（默认 `sharp-scan`）。选择 FTP 并启用 PASV 模式，目录填 `/`，它对应项目中的 `scans/` 目录。密码可用下面的命令复制到剪贴板：
 
 ```bash
 tr -d '\n' < .local/password | pbcopy
@@ -42,7 +44,9 @@ tr -d '\n' < .local/password | pbcopy
 
 ## 在另一台 Mac 上配置
 
-需要 uv、tmux 和 Python 3.12。在项目目录中执行：
+**1. 准备电脑和网络。** 将项目源码克隆或复制到新 Mac，让新 Mac 和打印机在局域网内互通。记下两台设备各自的局域网 IPv4 地址。安装 `uv` 和 `tmux`（已安装 Homebrew 的 Mac 可运行 `brew install uv tmux`）。
+
+**2. 初始化项目。** 在新 Mac 的项目根目录执行以下命令，由 uv 安装 Python 3.12 和项目依赖，并生成这台 Mac 专用的配置和 FTP 密码。
 
 ```bash
 UV_PYTHON_INSTALL_DIR="$PWD/.python" uv python install 3.12 --no-bin
@@ -52,7 +56,16 @@ cp -n config.example.toml .local/config.toml
 (umask 077; set -C; openssl rand -hex 14 > .local/password)
 ```
 
-编辑 `.local/config.toml`，把示例 IP 改为实际的 Mac 和扫描仪地址。随后运行 `./src/ftp-cli start` 和 `./src/ftp-cli test`，再填写扫描仪地址簿做一次实扫。现有工作区维护依赖时只需运行 `uv sync --locked`，然后重启服务。
+**3. 启动并自测。** 编辑 `.local/config.toml`，将 `mac_ip` 改为新 Mac 的局域网 IP，将 `scanner_ip` 改为打印机的 IP。保存后执行：
+
+```bash
+./src/ftp-cli start
+./src/ftp-cli test
+```
+
+**4. 从打印机试扫一页。** 在打印机地址簿中新增目的地，例如「新 Mac」，按[扫描仪设置](#扫描仪设置)填写新 Mac 的连接信息。保持 Mac 唤醒，在打印机上选择「图像发送」→「地址簿」→「新 Mac」，选择 PDF 并按「开始」。在项目根目录运行 `open scans`，确认收到刚扫描的 PDF。
+
+以后重新登录或重启 Mac 后，在项目根目录运行 `./src/ftp-cli start` 即可恢复接收。维护现有工作区依赖时，运行 `uv sync --locked`，然后重启服务。
 
 ## 项目文件与本机数据
 
