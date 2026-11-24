@@ -1,0 +1,3 @@
+#!/bin/sh
+# Use this workspace's installed entry point without activating the environment.
+exec "$(dirname "$0")/../.venv/bin/ftp-cli" "$@"

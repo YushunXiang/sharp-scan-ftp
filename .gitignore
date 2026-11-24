@@ -1,0 +1,11 @@
+# Local runtime and private scanner data
+/.local/
+/.python/
+/.venv/
+/scans/
+__pycache__/
+*.py[cod]
+.DS_Store
+/dist/
+/build/
+*.egg-info/

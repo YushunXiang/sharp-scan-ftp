@@ -1,0 +1,5 @@
+# Copy to .local/config.toml and set both LAN addresses.
+mac_ip = "192.0.2.10"
+scanner_ip = "192.0.2.20"
+port = 21
+username = "sharp-scan"
